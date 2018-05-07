@@ -163,5 +163,27 @@ Depois de adicionar alguns estilos personalizados ...
 
 … Finalmente vamos pegar nosso aplicativo de trabalho. Aproveite seus gatos!
 
+Etapa 4. Hospedando nosso aplicativo no GitHub
+4.1 Criando um novo repositório
+Crie um novo repositório no github.com (sem nenhum arquivo init - para evitar conflitos no futuro). Dê um nome ao seu projeto e pressione um grande botão verde abaixo.
+
+Vá até o terminal e execute o seguinte:
+
+git add .
+git commit -m "Upload project to github"
+git remote add origin git@github.com:{username}/{repo name}.git
+git push --set-upstream origin master
+
+E é isso! Recarregue a página do repositório para ver seu código no github.
+
+4.2 Criar uma versão de produção do aplicativo
+Nós não precisamos mais de ' ng serve ', então desligue-o. Tempo para algumas opções de produção:
+
+ng build --prod --base-href "/PWCat/"
+
+Como resultado, podemos ver uma nova pasta '/ dist' com nosso aplicativo empacotado.
+
+
+
 
 
