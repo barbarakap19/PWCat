@@ -183,6 +183,108 @@ ng build --prod --base-href "/PWCat/"
 
 Como resultado, podemos ver uma nova pasta '/ dist' com nosso aplicativo empacotado.
 
+....
+
+Etapa 1. Primeira Auditoria.
+Assim. Precisamos descobrir como está o nosso aplicativo e onde os nossos pontos de semana acontecem. E tudo o que precisamos fazer é abrir nossas DevTools do Chrome e ir para a guia Auditorias, onde podemos encontrar uma ferramenta tão poderosa quanto o Lighthouse ?- o melhor diagnóstico de páginas da web.
+
+inspecionar
+audits
+perform an audit
+run audit
+
+Etapa 2. Adicionando o shell do aplicativo
+Um shell de aplicativo é a interface do usuário mínima que o usuário verá o mais rápido possível. O shell do aplicativo deve carregar muito rápido para capturar os olhos do usuário e fazê-lo esperar por todo o conteúdo.
+
+O caminho fácil
+As etapas acima são obrigatórias e, na maioria dos casos, redundantes, porque o CLI angular pode fazer todo o trabalho para nós na etapa de criação. Você se lembra de como geramos nosso aplicativo na Parte 1 ? Quando começamos, não ouvimos falar dos funcionários do serviço, por isso não adicionamos o seguinte sinalizador mágico:
+
+ng new PWCat --service-worker
+
+Use-o como um aplicativo nativo
+Abra seu aplicativo no seu dispositivo de telefone usando o navegador Chrome. Observe o pop-up na parte inferior da guia.
+
+Depois de pressionar o botão azul, você encontrará o ícone do aplicativo no espaço livre da sua tela inicial
+
+E agora você pode usá-lo como um aplicativo nativo, você não precisa mais de um navegador e procurá-lo através do URL.
+
+stado off-line
+Você pode notar que o nosso aplicativo está funcionando mesmo se não houver conexão com a Internet, mas, infelizmente, não parece tão bom. Falta informação e cartão de imagem não nos agrada com qualquer cara de gato.
+
+Para consertar isso, precisamos mudar um pouco a lógica do img-card controller tornando nosso botão mais personalizável. Quero que meu botão "Obter novo gato" seja desativado quando estiver off-line e informe ao usuário sobre a situação. Vamos descobrir quais atributos podem ser definidos com js:
+
+// src/img-card/img-card.component.html
+...
+<button 
+  color="{{ button.color }}" 
+  (click)="generateSrc()" 
+  disabled="{{ button.disabled }}"
+  mat-button 
+  mat-raised-button>
+    {{ button.text }}
+</button>
+...
+
+Crie uma nova classe e defina os tipos para cada propriedade:
+
+// src/img-card/img-card.component.ts
+...
+class Button { 
+  text: string;
+  disabled: boolean;
+  color: string;
+}
+...
+
+Em seguida, crie uma nova propriedade pública de ImgCardComponent do tipo Button :
+// src/img-card/img-card.component.ts
+...
+public button: Button = {
+  text: 'Give me another cat',
+  color: 'primary',
+  disabled: false
+};
+...
+
+Podemos verificar se estamos online com o objeto global navigator:
+
+/ src/img-card/img-card.component.ts
+...
+ngOnInit() {
+  this.src = this.image.api + this.image.message + 
+    '?size=' + this.image.fontsize;
+  if (!navigator.onLine) {
+    this.button.text = 'Sorry, you\'re offline';
+    this.button.disabled = true;
+  }
+}
+...
+
+A última coisa que temos a fazer é dizer ao service worker para armazenar em cache a imagem do gato. Na seção assets do sw config, adicione a propriedade urls
+
+// src / ngsw-config.json
+...
+{ 
+  "name": "assets", 
+  "installMode": "lazy", 
+  "updateMode": "prefetch", 
+  "recursos": { 
+    "files": [ 
+      "/ assets / **" 
+    ], 
+    "urls": [ 
+      " https://cataas.com/** " 
+    ]
+   } 
+}
+
+Mais uma vez, confirmar, reconstruir e empurrar. Atualize seu aplicativo, desligue a guia Wi-Fi e recarregue novamente. Não há mais downasaurs - apenas gatos fofos :)
+
+E isso é finalmente tudo :)
+Você ainda pode encontrar o código-fonte do meu aplicativo aqui . Você pode testá-lo on-line (e off-line) aqui .
+
+https://nastyasmirnova.github.io/PWCat/
+
 
 
 
