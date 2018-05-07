@@ -1,0 +1,167 @@
+Criando o PWA com o Angular 5. Parte 1: Introdução ao framework, criando um aplicativo, hospedando-o nas páginas do github.
+
+Instala o CLI
+npm install -g @angular/cli
+
+Cria novo projeto
+ng new PWCat
+
+cd PWCat
+ng serve --open
+
+app.component.ts
+
+trocar o titulo
+export class AppComponent {
+  title = 'Progressive Web Cat';
+}
+
+Adicionar material
+
+npm install --save @angular/material @angular/cdk
+
+styles.css
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+add normalize.css
+npm install --save normalize.css
+
+In styles.css:
+@import '~normalize.css/normalize.css';
+
+app.module.ts
+import { MatToolbarModule } from '@angular/material';
+import { MatToolbarModule } from '@angular/material';
+
+app.component.html
+<mat-toolbar color="primary">
+  {{ title }}
+</mat-toolbar>
+
+generating components in Angular 5:
+
+ng generate component img-card
+
+app.module.ts
+import { ImgCardComponent } from './img-card/img-card.component';
+NgModule({
+  declarations: [
+    AppComponent,
+    ImgCardComponent
+  ],
+
+<!-- src/app/app.component.html -->
+<app-img-card></app-img-card>
+
+// src/app/app.module.ts
+
+import { 
+  MatToolbarModule,
+  MatCardModule 
+} from '@angular/material';
+...
+@NgModule({
+...
+  imports: [
+    BrowserModule,
+    MatToolbarModule,
+    MatCardModule
+  ],
+...
+})
+
+/ src/app/img-card/img-card.component.html
+<mat-card>
+  <img 
+    src="https://cataas.com/cat/says/Progressive%20Web%20Cat" 
+    alt="Cute cat"
+    mat-card-image>
+</mat-card>
+
+/ src/app/img-card/img-card.component.ts
+...
+class CatImage {
+  message: string;
+  api: string;
+  fontsize: number;
+}
+...
+
+Agora podemos adicionar uma imagem de propriedade privada do tipo CatImage para ImgCardComponent . A propriedade src deve ser pública e do tipo string . Dê uma olhada no modo como usamos essas propriedades no método ngOnInit:
+
+// src/app/img-card/img-card.component.ts
+...
+export class ImgCardComponent implements OnInit {
+  
+  private image: CatImage = {
+    message: 'Progressive Web Cat',
+    api: 'https://cataas.com/cat/says/',
+    fontsize: 40
+  };
+  public src: string;
+  ngOnInit() {
+    this.src = this.image.api + this.image.message;
+  }
+...
+
+Para tornar nosso botão vivo, devemos criar uma nova função (método público), que fará alguma mágica para nós. Eu chamei o meu generateSrc :
+
+ngOnInit() {
+  this.generateSrc();
+}
+generateSrc(): void {
+  this.src = this.image.api + this.image.message +
+    '?size=' + this.image.fontsize;
+}
+
+A palavra-chave void mostra que nossa função não tem nada para retornar. 
+O tamanho é uma das opções de imagem fornecidas pela cataas.com api.
+
+Hora de fazer algumas alterações na marcação do img-card . Substitua o URL longo de origem codificada pela propriedade do componente {{src}} . Para adicionar o listener de eventos ao botão do cartão, use o atributo (click) .
+
+/ src/app/img-card/img-card.component.html
+<mat-card>
+  <mat-card-actions>
+    <button 
+      color="primary" 
+      (click)="generateSrc()" // parentheses are important!
+      mat-button 
+      mat-raised-button>
+      Give me another cat
+    </button>
+  </mat-card-actions>
+  <img 
+    src="{{ src }}" 
+    alt="Cute cat"
+    mat-card-image>
+</mat-card>
+
+Infelizmente, a imagem não está sendo atualizada quando clicamos no botão Gerar, porque na verdade o valor de src permanece inalterado. Vamos consertar isso adicionando um parâmetro de consulta falso com um timestamp.
+
+// src/app/img-card/img-card.component.ts
+...
+public generateSrc(): void {
+  this.src = this.image.api + this.image.message + 
+    '?size=' + this.image.fontsize +
+    '&ts=' + Date.now();
+}
+
+Depois de adicionar alguns estilos personalizados ...
+
+// src/app/img-card/img-card.component.css
+.mat-card {
+  width: 400px;
+  margin: 2rem auto;
+}
+.mat-card .mat-card-actions {
+  padding-top: 0;
+}
+.mat-card .mat-button {
+  margin: 0 auto;
+  display: block;
+}
+
+… Finalmente vamos pegar nosso aplicativo de trabalho. Aproveite seus gatos!
+
+
+
